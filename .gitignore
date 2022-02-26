@@ -1,0 +1,4 @@
+/node_modules
+/app_test
+/db/old
+/test.sql
