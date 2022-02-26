@@ -15,6 +15,7 @@ router.post('/', function (req, res) {
         var keyword_title = 't.title ' + ((teachers.keyword.title == null) ? ('is not null') : ('= \'' + teachers.keyword.title) + '\'')
         db.query({
             sql: 'select\
+                SQL_CALC_FOUND_ROWS\
                 t.id as id,\
                 t.name as name,\
                 t.gender as gender,\
@@ -33,7 +34,8 @@ router.post('/', function (req, res) {
                 + ' and ' + keyword_title
                 + ' and ' + keyword_name
                 + ' and ' + keyword_field
-                + ' limit ?, ?',
+                + ' limit ?, ?;\
+                select FOUND_ROWS() as all_num;',
             values: [max_num_t, (req.body.page - 1) * req.body.size, req.body.size]
         }, function (err, rows) {
             if (err) {
@@ -46,8 +48,8 @@ router.post('/', function (req, res) {
                 return res.send({
                     status: 1,
                     message: "查询成功",
-                    length: rows.length,
-                    data: rows
+                    length: Math.ceil(rows[1][0].all_num / req.body.size),
+                    data: rows[0]
                 })
             }
         })
