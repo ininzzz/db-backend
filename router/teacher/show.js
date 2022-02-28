@@ -44,8 +44,8 @@ router.post('/', function (req, res) {
     }
     else {
         db.query({
-            sql: 'update selection set status = ? where teacher_id = ? and student_id = ?',
-            values: [req.body.status == 0 ? 2 : 1, req.user.user.usr, req.body.id]
+            sql: 'select count(*) as cnt from selection where student_id = ? and status = 2',
+            values: [req.body.id]
         }, function (err, rows) {
             if (err) {
                 return res.send({
@@ -53,18 +53,35 @@ router.post('/', function (req, res) {
                     message: err.sqlMessage
                 })
             }
-            if (rows.affectedRows > 0) {
-                return res.send({
-                    status: 1,
-                    message: "操作成功"
-                })
-            }
-            else {
+            if (rows[0].cnt > 0 && req.body.status == 1) {
                 return res.send({
                     status: 0,
-                    message: "操作失败"
+                    message: '该学生已被其他老师选择'
                 })
             }
+            db.query({
+                sql: 'update selection set status = ? where teacher_id = ? and student_id = ?',
+                values: [req.body.status == 0 ? 2 : 1, req.user.user.usr, req.body.id]
+            }, function (err, rows) {
+                if (err) {
+                    return res.send({
+                        status: 0,
+                        message: err.sqlMessage
+                    })
+                }
+                if (rows.affectedRows > 0) {
+                    return res.send({
+                        status: 1,
+                        message: "操作成功"
+                    })
+                }
+                else {
+                    return res.send({
+                        status: 0,
+                        message: "操作失败"
+                    })
+                }
+            })
         })
     }
 })

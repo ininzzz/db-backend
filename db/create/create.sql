@@ -38,10 +38,10 @@ create table `teacher`(
     `field` varchar(255)
 );
 
-create table `selection`(
+create table `selection_test`(
     -- 选择id，学号，教师号
-    `student_id` int not null references `student`(`id`),
-    `teacher_id` int not null references `teacher`(`tid`),
+    `student_id` int not null,
+    `teacher_id` int not null,
     -- 0: 申请中 1: 已接受 2: 已拒绝
     `status` int not null,
     primary key(`student_id`,`teacher_id`)

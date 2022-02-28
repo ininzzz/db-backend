@@ -21,6 +21,13 @@ router.post('/', function (req, res) {
             where t.college_id = c.id and s.student_id = ? and s.teacher_id = t.id',
             values: [req.user.user.usr]
         }, function (err, rows) {
+            for (var i = 0; i < rows.length; i++){
+                if (rows[i].status == 0) rows[i].status = '申请中'
+                else if (rows[i].status == 1) rows[i].status = '已接受'
+                else rows[i].status = '已拒绝'
+            }
+            
+            // console.log(rows);
             if (err) {
                 return res.send({
                     status: 0,

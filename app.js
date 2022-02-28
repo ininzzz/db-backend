@@ -11,6 +11,8 @@ const config = require('./config')
 
 const app = express()
 
+app.use(express.static('./public'))
+
 // prework
 app.use(cors())
 app.use(express.json())
